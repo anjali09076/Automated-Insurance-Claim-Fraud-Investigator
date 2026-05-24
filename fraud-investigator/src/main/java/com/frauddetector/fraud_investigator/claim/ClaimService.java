@@ -1,0 +1,42 @@
+package com.frauddetector.fraud_investigator.claim;
+import com.frauddetector.fraud_investigator.integration.PythonServiceClient;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+@Service
+public class ClaimService {
+    private final ClaimRepository claimRepository;
+    private final PythonServiceClient pythonServiceClient;
+    private final String UPLOAD_DIR = "uploads/";
+    public ClaimService(ClaimRepository claimRepository, PythonServiceClient pythonServiceClient) {
+        this.claimRepository = claimRepository;
+        this.pythonServiceClient = pythonServiceClient;
+    }
+    public ClaimEntity submitClaim(String claimantName, MultipartFile photo, MultipartFile policeReport, MultipartFile repairBill) throws Exception {
+        new File(UPLOAD_DIR).mkdirs();
+        Map<String, Object> aiResult = pythonServiceClient.analyze(photo, policeReport, repairBill);
+        ClaimEntity claim = new ClaimEntity();
+        claim.setClaimantName(claimantName);
+        claim.setAccidentPhotoPath(saveFile(photo));
+        claim.setPoliceReportPath(saveFile(policeReport));
+        claim.setRepairBillPath(saveFile(repairBill));
+        claim.setFraudScore((Integer) aiResult.get("fraud_score"));
+        claim.setRiskLevel((String) aiResult.get("risk_level"));
+        claim.setReasons(aiResult.get("reasons").toString());
+        return claimRepository.save(claim);
+    }
+    public List<ClaimEntity> getAllClaims() { return claimRepository.findAll(); }
+    public ClaimEntity getClaimById(Long id) {
+        return claimRepository.findById(id).orElseThrow(() -> new RuntimeException("Claim not found"));
+    }
+    private String saveFile(MultipartFile file) throws Exception {
+        Path path = Paths.get(UPLOAD_DIR + file.getOriginalFilename());
+        Files.write(path, file.getBytes());
+        return path.toString();
+    }
+}

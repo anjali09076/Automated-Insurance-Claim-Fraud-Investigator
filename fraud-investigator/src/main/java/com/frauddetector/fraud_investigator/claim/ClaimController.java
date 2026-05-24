@@ -1,0 +1,27 @@
+package com.frauddetector.fraud_investigator.claim;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+@RestController
+@RequestMapping("/api/claims")
+public class ClaimController {
+    private final ClaimService claimService;
+    public ClaimController(ClaimService claimService) { this.claimService = claimService; }
+    @PostMapping("/submit")
+    public ResponseEntity<ClaimEntity> submitClaim(
+            @RequestParam("claimantName") String claimantName,
+            @RequestParam("photo") MultipartFile photo,
+            @RequestParam("policeReport") MultipartFile policeReport,
+            @RequestParam("repairBill") MultipartFile repairBill) throws Exception {
+        return ResponseEntity.ok(claimService.submitClaim(claimantName, photo, policeReport, repairBill));
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<ClaimEntity>> getAllClaims() {
+        return ResponseEntity.ok(claimService.getAllClaims());
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ClaimEntity> getClaimById(@PathVariable Long id) {
+        return ResponseEntity.ok(claimService.getClaimById(id));
+    }
+}
