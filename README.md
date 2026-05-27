@@ -35,9 +35,19 @@ Output Example
   "fraud_score": 92,
   "risk_level": "HIGH",
   "reasons": [
-    "Duplicate image detected",
+    "Duplicate image detected",aft
     "Repair cost mismatch",
     "Location inconsistency"
   ]
 }
 
+  # Screenshots
+
+Dashboard
+![Dashboard](screenshots/1-dashboard.png)
+
+ Submit Claim
+![Submit Claim](screenshots/2-submit-claim.png)
+
+Fraud Result
+![Result](screenshots/3-fraud-result.png)
