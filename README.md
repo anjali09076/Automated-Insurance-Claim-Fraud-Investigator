@@ -50,4 +50,4 @@ Dashboard
 ![Submit Claim](screenshots/2-submit-claim.png)
 
 Fraud Result
-![Result](screenshots/3-fraud-result.png)
+![Result](screenshots/3-fraud-result-new.png)
